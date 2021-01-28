@@ -1,22 +1,50 @@
-import React from "react"
-import { Link } from "gatsby"
+import React, { useState, useEffect } from "react"
 
-import Layout from "../components/layout"
-import Image from "../components/image"
-import SEO from "../components/seo"
+import Users from "../data"
 
-const IndexPage = () => (
-  <Layout>
-    <SEO title="Home" />
-    <h1>Hi people</h1>
-    <p>Welcome to your new Gatsby site.</p>
-    <p>Now go build something great.</p>
-    <div style={{ maxWidth: `300px`, marginBottom: `1.45rem` }}>
-      <Image />
-    </div>
-    <Link to="/page-2/">Go to page 2</Link> <br />
-    <Link to="/using-typescript/">Go to "Using TypeScript"</Link>
-  </Layout>
-)
+function IndexPage() {
+  const [users, setUsers] = useState(Users)
+  const [categories, setCategories] = useState([])
+
+  const locationFilter = (e) => {
+    e.preventDefault();
+  
+    const locationUsers = Users.filter(user => user.location === e.target.textContent);
+    console.log(locationUsers);
+  
+    setUsers(locationUsers);
+  }
+
+  useEffect(() => {
+    const locations = []
+
+    Users.map(element => {
+      return locations.push(element.location)
+    })
+
+    const uniqueLocations = new Set(locations)
+    const locationsArray = Array.from(uniqueLocations)
+    setCategories(locationsArray)
+
+  }, [])
+
+  return (
+    <>
+      {categories.map((category) => {
+        return <button key={category} onClick={locationFilter}>{category}</button>
+      })}
+      <ul>
+        {users.map(user => {
+          const { name, age, location } = user
+          return (
+            <li key={name}>
+              {name}, {age}, {location}
+            </li>
+          )
+        })}
+      </ul>
+    </>
+  )
+}
 
 export default IndexPage
